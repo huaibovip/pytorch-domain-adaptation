@@ -4,14 +4,14 @@ import torch
 from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 
-import config
+from libs import config
 
 
 class BSDS500(Dataset):
 
     def __init__(self):
-        image_folder = config.DATA_DIR / 'BSR/BSDS500/data/images'
-        self.image_files = list(map(str, image_folder.glob('*/*.jpg')))
+        image_folder = config.DATA_DIR / "BSDS500/data/images"
+        self.image_files = list(map(str, image_folder.glob("*/*.jpg")))
 
     def __getitem__(self, i):
         image = cv2.imread(self.image_files[i], cv2.IMREAD_COLOR)
@@ -26,8 +26,9 @@ class MNISTM(Dataset):
 
     def __init__(self, train=True):
         super(MNISTM, self).__init__()
-        self.mnist = datasets.MNIST(config.DATA_DIR / 'mnist', train=train,
-                                    download=True)
+        self.mnist = datasets.MNIST(
+            config.DATA_DIR / "mnist", train=train, download=True
+        )
         self.bsds = BSDS500()
         # Fix RNG so the same images are used for blending
         self.rng = np.random.RandomState(42)
@@ -43,9 +44,9 @@ class MNISTM(Dataset):
 
     def _random_patch(self, image, size=(28, 28)):
         _, im_height, im_width = image.shape
-        x = self.rng.randint(0, im_width-size[1])
-        y = self.rng.randint(0, im_height-size[0])
-        return image[:, y:y+size[0], x:x+size[1]]
+        x = self.rng.randint(0, im_width - size[1])
+        y = self.rng.randint(0, im_height - size[0])
+        return image[:, y : y + size[0], x : x + size[1]]
 
     def _random_bsds_image(self):
         i = self.rng.choice(len(self.bsds))

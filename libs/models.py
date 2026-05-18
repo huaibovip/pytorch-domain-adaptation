@@ -12,7 +12,7 @@ class Net(nn.Module):
             nn.MaxPool2d(2),
             nn.Dropout2d(),
         )
-        
+
         self.classifier = nn.Sequential(
             nn.Linear(320, 50),
             nn.ReLU(),
