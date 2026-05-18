@@ -96,7 +96,6 @@ def main(args):
 
                 preds = discriminator(discriminator_x).squeeze()
                 loss = criterion(preds, discriminator_y)
-
                 discriminator_optim.zero_grad()
                 loss.backward()
                 discriminator_optim.step()
@@ -117,7 +116,6 @@ def main(args):
 
                 preds = discriminator(target_features).squeeze()
                 loss = criterion(preds, discriminator_y)
-
                 target_optim.zero_grad()
                 loss.backward()
                 target_optim.step()

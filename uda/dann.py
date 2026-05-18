@@ -90,7 +90,6 @@ def main(args):
             domain_loss = F.binary_cross_entropy_with_logits(domain_preds, domain_y)
             label_loss = F.cross_entropy(label_preds, label_y)
             loss = domain_loss + label_loss
-
             optim.zero_grad()
             loss.backward()
             optim.step()

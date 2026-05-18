@@ -52,7 +52,11 @@ def main(args):
     discriminator = clf_model.classifier
 
     critic = nn.Sequential(
-        nn.Linear(320, 50), nn.ReLU(), nn.Linear(50, 20), nn.ReLU(), nn.Linear(20, 1)
+        nn.Linear(320, 50),
+        nn.ReLU(),
+        nn.Linear(50, 20),
+        nn.ReLU(),
+        nn.Linear(20, 1),
     ).to(device)
 
     half_batch = args.batch_size // 2
@@ -92,29 +96,26 @@ def main(args):
         total_accuracy = 0
         for _ in trange(args.iterations, leave=False):
             (source_x, source_y), (target_x, _) = next(batch_iterator)
+
             # Train critic
             set_requires_grad(feature_extractor, requires_grad=False)
             set_requires_grad(critic, requires_grad=True)
 
             source_x, target_x = source_x.to(device), target_x.to(device)
             source_y = source_y.to(device)
-
             with torch.no_grad():
                 h_s = feature_extractor(source_x).data.view(source_x.shape[0], -1)
                 h_t = feature_extractor(target_x).data.view(target_x.shape[0], -1)
+
             for _ in range(args.k_critic):
                 gp = gradient_penalty(critic, h_s, h_t)
-
                 critic_s = critic(h_s)
                 critic_t = critic(h_t)
                 wasserstein_distance = critic_s.mean() - critic_t.mean()
-
                 critic_cost = -wasserstein_distance + args.gamma * gp
-
                 critic_optim.zero_grad()
                 critic_cost.backward()
                 critic_optim.step()
-
                 total_loss += critic_cost.item()
 
             # Train classifier
@@ -130,10 +131,7 @@ def main(args):
 
                 source_preds = discriminator(source_features)
                 clf_loss = clf_criterion(source_preds, source_y)
-                wasserstein_distance = (
-                    critic(source_features).mean() - critic(target_features).mean()
-                )
-
+                wasserstein_distance = critic(source_features).mean() - critic(target_features).mean()
                 loss = clf_loss + args.wd_clf * wasserstein_distance
                 clf_optim.zero_grad()
                 loss.backward()
