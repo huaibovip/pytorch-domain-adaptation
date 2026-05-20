@@ -85,8 +85,8 @@ def main(args):
         pin_memory=True,
     )
 
-    critic_optim = torch.optim.Adam(critic.parameters(), lr=1e-4)
-    clf_optim = torch.optim.Adam(clf_model.parameters(), lr=1e-4)
+    critic_optim = torch.optim.Adam(critic.parameters(), lr=args.lr_critic)
+    clf_optim = torch.optim.Adam(clf_model.parameters(), lr=args.lr_clf)
     clf_criterion = nn.CrossEntropyLoss()
 
     for epoch in range(1, args.epochs + 1):
@@ -152,5 +152,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--k-clf", type=int, default=1)
     arg_parser.add_argument("--gamma", type=float, default=10)
     arg_parser.add_argument("--wd-clf", type=float, default=1)
+    arg_parser.add_argument("--lr-clf", type=float, default=1e-4)
+    arg_parser.add_argument("--lr-critic", type=float, default=1e-4)
     args = arg_parser.parse_args()
     main(args)
